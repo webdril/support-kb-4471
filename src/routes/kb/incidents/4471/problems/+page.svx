@@ -20,13 +20,23 @@ signature: webdril
 holds separate bugs with separate fixes. Shipping the parser fix closes only `parser`.
 
 <Callout kind="warn">
-Not one issue. Each problem below has its own ticket; keep merging new reports into the right one,
-not into #4471.
+Not one issue. #4471 is closed, but `shift` is still open: merge new one-day moves into its ticket,
+not into a closed one.
 </Callout>
 
 ## What #4471 holds
 
 <ProblemTable ticket={4471} {issues} />
+
+## Since 5 October
+
+Engineering closed #4471 on 5 October:
+
+- `parser`: **fixed** (`fix(dates): parse dd/mm for eu locales`). Ticket closed.
+- `hint`: **won't fix**. booking-v3's form is retired, so no new reports can come in this way.
+  Ticket closed.
+- `shift`: **not addressed**. Neither change touches it. Its ticket stays open: one-day moves
+  will keep coming in after #4471 is closed, and they belong there.
 
 ## The problems
 
