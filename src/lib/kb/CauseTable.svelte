@@ -1,13 +1,13 @@
 <script lang="ts">
   import reports from '#lib/data/reports-4471.json';
   import notes from '#lib/data/desk-notes.json';
-  import { groupByCause, readAs, ticketCause, uniqueById, type Report } from '#lib/kb/causes';
+  import { groupByCause, ticketCause, uniqueById, type Report } from '#lib/kb/causes';
   import { tenantOf } from '#lib/kb/locales';
 
   let { ticket }: { ticket: number } = $props();
 
   const merged = $derived(uniqueById(reports as Report[]).filter((r) => r.mergedInto === ticket));
-  const groups = $derived(groupByCause(merged, tenantOf));
+  const groups = $derived(groupByCause(merged, tenantOf, notes.oneDayMove));
   const owner = $derived(ticketCause(groups, ticket));
   const tags = (g: { taggedAs: Record<string, number> }) =>
     Object.entries(g.taggedAs)
@@ -40,17 +40,9 @@
   </tbody>
 </table>
 
-{#each groups as g (g.cause)}
-  {@const moved = readAs(g, notes.oneDayMove)}
-  {#if moved}
-    <p class="note">{moved} reports read as a one-day move; filed under <code>{g.cause}</code> by tenant.</p>
-  {/if}
-{/each}
-
 <style>
   .sum { font-size: 1.1rem; }
   .tags { color: var(--muted); font-size: 0.85em; }
-  .note { color: var(--muted); font-size: 0.85em; }
   .wrong td { background: var(--warn-bg); }
   .wrong td:last-child { color: var(--warn); font-weight: 600; }
 </style>

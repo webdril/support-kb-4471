@@ -1,6 +1,6 @@
 ---
 layout: runbook
-title: '#4471 · three problems, not one'
+title: '#4471 · not one problem'
 owner: webdril
 status: open
 reviewed: 2026-10-29
@@ -17,7 +17,7 @@ signature: webdril
 </script>
 
 [#4471](/kb/incidents/4471) is marked known: one bug, one fix queued. Read report by report, it
-holds three bugs with three different fixes. Shipping the parser fix closes only the first.
+holds separate bugs with separate fixes. Shipping the parser fix closes only `parser`.
 
 <Callout kind="warn">
 Not one issue. Each problem below has its own ticket; keep merging new reports into the right one,
@@ -28,7 +28,7 @@ not into #4471.
 
 <ProblemTable ticket={4471} {issues} />
 
-## The three problems
+## The problems
 
 **`parser`: the shared parser reads dates month first.** Every tenant on file writes the day
 first. A booking for 4 July goes out as 7 April. It reaches the desk through the app, by email,
@@ -51,13 +51,13 @@ won't touch them.
 - `parser` and `hint` use the desk's own rule in `causes.ts`: tenant locale, channel, and the
   tenant's booking form. Intake's tag is a guess from the browser and is not used; the table shows
   how often it disagrees.
-- `shift` is the desk's own list of one-day moves (`desk-notes.json`), read in `problems.ts`.
+- `shift` is the desk's own list of one-day moves (`desk-notes.json`), now part of `causeOf()`.
 - All numbers on this page come from the data at render time. When the desk merges more reports
   into #4471, the table follows.
 
 ## For the desk
 
-- Decision [0001](/kb/decisions/0001-dedupe-by-subject) merges on subject. Each of these three
+- Decision [0001](/kb/decisions/0001-dedupe-by-subject) merges on subject. Each of these
   problems arrives under the same handful of subjects, so subject matching put them in one ticket.
   The [triage explorer](/kb/triage/dedupe) already shows that same subject is not same cause.
 - When a report reads as a one-day move, file it under `shift`, not under the tenant's cause.
