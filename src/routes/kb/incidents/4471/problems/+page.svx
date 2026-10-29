@@ -1,0 +1,65 @@
+---
+layout: runbook
+title: '#4471 · three problems, not one'
+owner: webdril
+status: open
+reviewed: 2026-10-29
+signature: webdril
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+
+  const repo = 'https://github.com/webdril/support-kb-4471/issues';
+  const issues = { parser: `${repo}/1`, hint: `${repo}/2`, shift: `${repo}/3` };
+</script>
+
+[#4471](/kb/incidents/4471) is marked known: one bug, one fix queued. Read report by report, it
+holds three bugs with three different fixes. Shipping the parser fix closes only the first.
+
+<Callout kind="warn">
+Not one issue. Each problem below has its own ticket; keep merging new reports into the right one,
+not into #4471.
+</Callout>
+
+## What #4471 holds
+
+<ProblemTable ticket={4471} {issues} />
+
+## The three problems
+
+**`parser`: the shared parser reads dates month first.** Every tenant on file writes the day
+first. A booking for 4 July goes out as 7 April. It reaches the desk through the app, by email,
+and through booking-v2's form, whose hint (DD/MM/YYYY) is right.
+
+**`hint`: booking-v3's form tells day-first tenants to type MM/DD/YYYY.** People do what the
+hint says, and the form then reads their input the tenant's way, day first. The report looks the
+same as a parser report, a day/month swap, but it only comes through the form, only at tenants on
+booking-v3, and the fix is the hint, not the parser. Fixing the parser alone leaves it in place.
+
+**`shift`: the date moves by one day.** Tuesday 12 May shows as Monday 11 May; a client in Lisbon
+gets Tuesday while a client in Toronto gets Monday; an invite arrives before its booking. No day
+and month swap here: the time is converted across zones and the day boundary moves. The desk
+noted these in `desk-notes.json` and still filed them under `parser` by tenant. The parser fix
+won't touch them.
+
+## How this was counted
+
+- One id, one report: the export repeats some rows across overlapping pages, and they count once.
+- `parser` and `hint` use the desk's own rule in `causes.ts`: tenant locale, channel, and the
+  tenant's booking form. Intake's tag is a guess from the browser and is not used; the table shows
+  how often it disagrees.
+- `shift` is the desk's own list of one-day moves (`desk-notes.json`), read in `problems.ts`.
+- All numbers on this page come from the data at render time. When the desk merges more reports
+  into #4471, the table follows.
+
+## For the desk
+
+- Decision [0001](/kb/decisions/0001-dedupe-by-subject) merges on subject. Each of these three
+  problems arrives under the same handful of subjects, so subject matching put them in one ticket.
+  The [triage explorer](/kb/triage/dedupe) already shows that same subject is not same cause.
+- When a report reads as a one-day move, file it under `shift`, not under the tenant's cause.
+
+<RenderStamp {signature} />
